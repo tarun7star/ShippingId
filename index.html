@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Shipping Details</title>
+    
+    <!--  ether.js bridge to connect the smart contract  -->
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+</head>
+<body>
+                           <!-- contract address and ABI -->
+    <script>
+        const contractAddress = '0xdD85aaB865A81b2443ba02b9cFaE2c93aE6b4a8d';
+        const contractABI = [
+            {
+                "inputs": [
+                    {
+                        "internalType": "string",
+                        "name": "name",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "date",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "price",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "noOfItem",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "location",
+                        "type": "string"
+                    }
+                ],
+                "name": "EnterDetails",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "getYourId",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "shippingId",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "owner",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "name",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "date",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "price",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "noOfItem",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "location",
+                        "type": "string"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ];
+
+     
+
+    
+    </script>
+
+    <!-- frontend for shipping details -->
+    <h1>Enter Shipping Details</h1>
+    <div id="shippingDetails"></div>
+    <form id="shippingForm">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name"><br><br>
+        <label for="date">Date:</label>
+        <input type="datetime-local" id="date" name="date"><br><br>
+        <label for="price">Price:</label>
+        <input type="number" id="price" name="price"><br><br>
+        <label for="noOfItem">Number of Items:</label>
+        <input type="number" id="noOfItem" name="noOfItem"><br><br>
+        <label for="location">Location:</label>
+        <input type="text" id="location" name="location"><br><br>
+        <button type="button" onclick="enterDetails()">Submit</button>
+    </form>
+
+    <!-- responsible for displaying shipping details in frontend  -->
+    <div id="shippingDetails"></div>                
+
+    <!-- javascript for shipping details  -->
+    <script>       
+     async function enterDetails() {
+        if (!window.ethereum) {  //it will check wheather there is metamask in browser
+            alert("Please install MetaMask!");
+            return;
+        }
+
+        await window.ethereum.request({ method: 'eth_requestAccounts' });//metamask will ask for account signin
+
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
+        const contract = new ethers.Contract(contractAddress, contractABI, signer);
+
+        const name = document.getElementById('name').value;                 
+        const dateInput = document.getElementById('date').value;
+        const priceInput = document.getElementById('price').value;       // getting the value of all input
+        const noOfItemInput = document.getElementById('noOfItem').value;
+        const location = document.getElementById('location').value;
+
+        const date = Math.floor(new Date(dateInput).getTime() / 1000); //this will convert the date from millisec to sec
+        const price = parseInt(priceInput);     //string to int         
+        const noOfItem = parseInt(noOfItemInput); //string to int 
+
+        console.log("name:", name);
+        console.log("date:", date);
+        console.log("price:", price);
+        console.log("noOfItem:", noOfItem);
+        console.log("location:", location);
+
+        if (isNaN(date) || isNaN(price) || isNaN(noOfItem)) {
+            alert('Invalid input values. Please check your entries.');
+            return;
+        }
+
+        try {
+            const currentId = await contract.getYourId();
+            console.log("Current Shipping ID:", currentId.toString());
+
+            const tx = await contract.EnterDetails(name, date, price, noOfItem, location);
+            await tx.wait();
+            alert('Details entered successfully! Your shipping ID is ' + currentId.toString());
+        } catch (error) {
+            console.error(error);
+            alert('Error entering details');
+        }
+    }
+    </script>
+
+      <!-- fetch details frontend  -->
+    <h1>Fetch Shipping Details</h1>
+    <form id="fetchForm">
+        
+        <label for="shippingId">Shipping ID:</label>
+        <input type="number" id="shippingId" name="shippingId"><br><br>
+        <button type="button" onclick="fetchDetails()">Fetch</button>
+    
+    </form>
+    
+
+    <!-- javascript for fetch deatils  -->
+    <script>
+        async function fetchDetails() {
+            if (!window.ethereum) {
+                alert("Please install MetaMask!");
+                return;
+            }
+
+            await window.ethereum.request({ method: 'eth_requestAccounts' });
+
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const signer = provider.getSigner();
+            const contract = new ethers.Contract(contractAddress, contractABI, signer);
+
+            const shippingIdInput = document.getElementById('shippingId').value;
+            const shippingId = parseInt(shippingIdInput);
+
+            if (isNaN(shippingId)) {
+                alert('Invalid shipping ID. Please enter a valid number.');
+                return;
+            }
+
+            try {
+                const details = await contract.shippingId(shippingId);
+                const owner = details.owner;
+                const name = details.name;
+                const date = new Date(details.date.toNumber() * 1000).toLocaleString();
+                const price = details.price.toString();
+                const noOfItem = details.noOfItem.toString();
+                const location = details.location;
+
+                document.getElementById('shippingDetails').innerHTML = `
+                    <h3>Shipping Details</h3>
+                    <p><strong>Owner:</strong> ${owner}</p>
+                    <p><strong>Name:</strong> ${name}</p>
+                    <p><strong>Date:</strong> ${date}</p>
+                    <p><strong>Price:</strong> ${price}</p>
+                    <p><strong>Number of Items:</strong> ${noOfItem}</p>
+                    <p><strong>Location:</strong> ${location}</p>
+                `;
+            } catch (error) {
+                console.error(error);
+                alert('Error fetching details');
+            }
+        }
+    </script>
+    
+    
+
+   
+</body>
+</html>
