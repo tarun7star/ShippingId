@@ -1,0 +1,31 @@
+body {
+    background-color: black;
+    color: white;
+}
+h1{
+    display: flex;
+    justify-content: center;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    margin-top: 2px5;
+}
+.container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: red;
+    margin-top: 35vh;
+
+    
+}
+
+input{
+    border: solid black 3px;
+}
+
+button {
+    border: solid black 2px;
+    background-color: white;
+    color:black;
+    padding: 5px 8px;
+    margin-left:20vh;
+}
