@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>Shipping Details</title>
-    
+    <link rel="stylesheet" href="style.css">
     <!--  ether.js bridge to connect the smart contract  -->
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 </head>
@@ -109,6 +109,8 @@
     </script>
 
     <!-- frontend for shipping details -->
+     <h1> Shipping Details Management System </h1>
+     <div class="container">
     <h1>Enter Shipping Details</h1>
     <div id="shippingDetails"></div>
     <form id="shippingForm">
@@ -126,9 +128,20 @@
     </form>
 
     <!-- responsible for displaying shipping details in frontend  -->
-    <div id="shippingDetails"></div>                
+    <div id="shippingDetails"></div>
+    
+    <!-- fetch details frontend  -->
+    <h1>Fetch Shipping Details</h1>
+    <form id="fetchForm">
+        
+        <label for="shippingId">Shipping ID:</label>
+        <input type="number" id="shippingId" name="shippingId"><br><br>
+        <button type="button" onclick="fetchDetails()">Fetch</button>
+    
+    </form>
 
     <!-- javascript for shipping details  -->
+</div>
     <script>       
      async function enterDetails() {
         if (!window.ethereum) {  //it will check wheather there is metamask in browser
@@ -177,15 +190,7 @@
     }
     </script>
 
-      <!-- fetch details frontend  -->
-    <h1>Fetch Shipping Details</h1>
-    <form id="fetchForm">
-        
-        <label for="shippingId">Shipping ID:</label>
-        <input type="number" id="shippingId" name="shippingId"><br><br>
-        <button type="button" onclick="fetchDetails()">Fetch</button>
-    
-    </form>
+      
     
 
     <!-- javascript for fetch deatils  -->
